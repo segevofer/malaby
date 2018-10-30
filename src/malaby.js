@@ -1,18 +1,31 @@
 const _ = require('lodash');
 const path = require('path');
 
-const {getConfig, isFlagOn, buildContext, buildCommandString, fetchLatestVersion, createConfigFile} = require('./utils');
+const {
+    getConfig,
+    isFlagOn,
+    buildContext,
+    buildCommandString,
+    fetchLatestVersion,
+    createConfigFile,
+    getConfigPath
+} = require('./utils');
+
 const logger = require('./logger');
 const malabyRunner = require('./malabyRunner');
 
-const filePath = _.find(process.argv, param => param && param.includes('.js'));
 const CWD = process.cwd();
-const configPath = `${CWD}/malaby-config.json`;
-const config = getConfig(configPath);
+const filePath = _.find(process.argv, param => param && param.includes('.js'));
+const userInputConfigArg = _.find(process.argv, arg => arg.indexOf('--config') !== -1);
+const configFromUserInput = userInputConfigArg && userInputConfigArg.split('=')[1];
+const isInitCommand = process.argv.length === 3 && process.argv[2] === 'init';
 const isWatchMode = isFlagOn(process.argv, '--watch');
 const isDebug = isFlagOn(process.argv, '--debug');
-const isMalabyInit = process.argv.length === 3 && process.argv[2] === 'init';
 const isAskingForVersion = isFlagOn(process.argv, '--version');
+
+
+const configPath = getConfigPath(CWD, configFromUserInput);
+const config = configPath && getConfig(configPath);
 const currentVersion = require('../package').version;
 
 (async () => {
@@ -28,13 +41,13 @@ const currentVersion = require('../package').version;
         process.exit(1);
     }
 
-    if (isMalabyInit) {
+    if (isInitCommand) {
         createConfigFile(configPath);
         return;
     }
 
     if (!config) {
-        logger.couldNotFileConfigurationFile(configPath);
+        logger.couldNotFileConfigurationFile(configPath, configFromUserInput);
         process.exit(1);
     }
 

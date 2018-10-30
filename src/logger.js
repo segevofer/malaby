@@ -21,10 +21,15 @@ logger.help = () => {
     log(`   ${chalk.underline('Additional options:')}`);
     log(`   --debug: run ndb (https://www.npmjs.com/package/ndb)`);
     log(`   --watch: re-run the test every file change in the project`);
+    log(`   --config: specify different config file --config=different-malaby-config.json`);
 };
 
-logger.couldNotFileConfigurationFile = configPath => {
-    log(`${red('Could not find configuration file')} ${yellow(configPath)}\ntype ${green('malaby init')} to create it`);
+logger.couldNotFileConfigurationFile = (configPath, configFromUserInput) => {
+    const path = configFromUserInput || configPath;
+    log(`${red('Could not find configuration file')} ${yellow(path)}`);
+    if (!configFromUserInput) {
+        log(`type ${green('malaby init')} to create it`);
+    }
 };
 
 logger.moreThanOneConfigFound = (filePath, suffix, config) => {

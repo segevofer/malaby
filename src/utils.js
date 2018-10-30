@@ -3,10 +3,25 @@ const fs = require('fs');
 const http = require('http');
 const logger = require('./logger');
 
-function getConfig(malabyConfigPath) {
-    try {
-        return require(malabyConfigPath);
-    } catch (e) {}// eslint-disable-line
+function getConfigPath(CWD, configFromUserInput) {
+    if (configFromUserInput) {
+        const relativePath = `${CWD}/${configFromUserInput}`;
+        const absolutePath = configFromUserInput;
+
+        if (fs.existsSync(relativePath)) {
+            return relativePath;
+        } else if (fs.existsSync(absolutePath)) {
+            return absolutePath;
+        } else {
+            return undefined;
+        }
+    }
+    return `${CWD}/malaby-config.json`;
+}
+
+function getConfig(configPath) {
+    const isConfigFileExists = fs.existsSync(configPath);
+    return isConfigFileExists ? require(configPath) : undefined;
 }
 
 const isFlagOn = (argv, flagName) => !!_.find(argv, param => param === flagName);
@@ -70,6 +85,7 @@ const createConfigFile = configPath => {
 };
 
 module.exports = {
+    getConfigPath,
     getConfig,
     isFlagOn,
     buildContext,
