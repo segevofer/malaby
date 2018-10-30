@@ -1,0 +1,34 @@
+{
+  "name": "malaby",
+  "version": "1.0.0",
+  "description": "Easy and fast test runner to run any kind of test",
+  "main": "malaby.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/segevofer/malaby.git"
+  },
+  "author": "segevofer@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/segevofer/malaby/issues"
+  },
+  "engines": {
+    "node": ">=7.6.0"
+  },
+  "homepage": "https://github.com/segevofer/malaby#readme",
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "chalk": "^2.4.1",
+    "node-watch": "^0.5.8"
+  },
+  "bin": {
+    "malaby": "./index.js"
+  },
+  "devDependencies": {
+    "eslint": "^5.8.0",
+    "eslint-plugin-node": "^7.0.1"
+  }
+}
