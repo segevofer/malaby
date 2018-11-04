@@ -16,8 +16,8 @@ const logger = require('./logger');
 const malabyRunner = require('./malabyRunner');
 
 const CWD = process.cwd();
-const filePath = _.find(process.argv, param => param && param.includes('.js'));
-const userInputConfigArg = _.find(process.argv, arg => arg.indexOf('--config') !== -1);
+const userInputConfigArg = _.find(process.argv, param => param && _.startsWith(param, '--config'));
+const filePath = _.find(process.argv, param => param && _.endsWith(param, '.js'));
 const configFromUserInput = userInputConfigArg && userInputConfigArg.split('=')[1];
 const isInitCommand = process.argv.length === 3 && process.argv[2] === 'init';
 const isWatchMode = isFlagOn(process.argv, '--watch');

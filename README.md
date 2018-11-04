@@ -75,8 +75,8 @@ Example 2:
     "command": "yarn unit ${filePath}"
   },
   ".ix.js": {
-    "command": "jest ${filePath} --config jest-beaker.config.js",
-    "debugCommand": "jest ${filePath} --config jest-beaker-debug.config.js"
+    "command": "jest ${filePath} --config=jest-beaker.config.js",
+    "debugCommand": "jest ${filePath} --config=jest-beaker-debug.config.js"
   }
 }
 ```
