@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const fs = require('fs');
 const path = require('path');
 
 const {
@@ -61,6 +62,13 @@ const currentVersion = require('../package').version;
 
     if (!context.config) {
         logger.noMatchingTestsFound(filePath, configPath);
+        process.exit(1);
+    }
+
+    const fileAbsolutePath = path.join(CWD, filePath);
+    const testFileExists = fs.existsSync(fileAbsolutePath);
+    if (!testFileExists) {
+        logger.testFileDoesNotExist(CWD, fileAbsolutePath);
         process.exit(1);
     }
 

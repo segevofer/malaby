@@ -11,7 +11,7 @@ logger.encoded = data => {
     log(`${data}`);
 };
 
-logger.malabyIsSatisfied = () => {
+logger.malabyIsHappy = () => {
     log(`   ${green('🍧 Malaby Is Happy')}\n\n`);
 };
 
@@ -41,7 +41,10 @@ logger.noMatchingTestsFound = (filePath, configPath) => {
     log(red(`
     No matching tests found for ${filePath}
     Check your configuration in ${configPath}`));
+};
 
+logger.testFileDoesNotExist = (CWD, fileAbsolutePath) => {
+    log(`Test file doesn't exist: ${red(fileAbsolutePath)}`);
 };
 
 logger.commandAndSuffixFound = (suffix, filePath, commandString) => {

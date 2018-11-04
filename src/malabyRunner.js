@@ -22,7 +22,11 @@ module.exports = (command, commandArgs, {CWD, isWatchMode, isDebug}) => {
     const onFinish = exitCode => {
         inProgress = false;
         if (exitCode === 0) {
-            logger.malabyIsSatisfied();
+            if (!isDebug) {
+                logger.malabyIsHappy();
+            } else {
+                logger('Debugger disconnected');
+            }
             return;
         }
         if (shouldRunNextTime) {
