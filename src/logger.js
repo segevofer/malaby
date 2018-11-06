@@ -1,5 +1,5 @@
-const chalk = require('chalk');
-const {red, yellow, green} = chalk;
+const _ = require('lodash');
+const {red, yellow, green, underline} = require('chalk');
 
 const log = function (msg = '') {
     console.log(msg); // eslint-disable-line
@@ -18,7 +18,7 @@ logger.malabyIsHappy = () => {
 logger.help = () => {
     log(red(`\n   Please supply Malaby a file to test! something like this:`));
     log(`   ${yellow('<your-project>')}/${green('malaby')} path/to/testFile.unit.spec.it.ix.something.js\n`);
-    log(`   ${chalk.underline('Additional options:')}`);
+    log(`   ${underline('Additional options:')}`);
     log(`   --debug: run ndb (https://www.npmjs.com/package/ndb)`);
     log(`   --watch: re-run the test every file change in the project`);
     log(`   --config: specify different config file --config=different-malaby-config.json`);
@@ -32,9 +32,11 @@ logger.couldNotFileConfigurationFile = (configPath, configFromUserInput) => {
     }
 };
 
-logger.moreThanOneConfigFound = (filePath, suffix, config) => {
-    log(red(`More than one config found for ${filePath}`));
-    log(suffix, config);
+logger.moreThanOneConfigFound = (filePath, matchingGlobs) => {
+    log(red(`More than one config found for ${filePath}\n`));
+    _.forEach(matchingGlobs, (glob, index) => {
+        log(red(`   ${index + 1} - ${glob}`));
+    });
 };
 
 logger.noMatchingTestsFound = (filePath, configPath) => {
@@ -47,8 +49,7 @@ logger.testFileDoesNotExist = fileAbsolutePath => {
     log(`Test file doesn't exist: ${red(fileAbsolutePath)}`);
 };
 
-logger.commandAndSuffixFound = (suffix, filePath, commandString) => {
-    log(yellow(`Found Matching tests for suffix ${suffix}`));
+logger.commandFound = (filePath, commandString) => {
     log(`File: ${green(filePath)}\nCommand: ${green(commandString)}`);
 };
 

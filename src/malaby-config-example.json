@@ -1,11 +1,11 @@
 {
-  ".unit.js": {
+  "*.unit.js": {
     "command": "yarn unit-test ${filePath}"
   },
-  ".spec.js": {
+  "*.spec.js": {
     "command": "node js/test/jasmine.js ${filePath}"
   },
-  ".it.js": {
+  "*.it.js": {
     "command": "grunt someTask -test=*${fileName}*",
     "debugCommand": "grunt someOtherTask -test=*${fileName}* --debug"
   }

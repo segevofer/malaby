@@ -49,13 +49,13 @@ Example:
 *root-of-project/malaby-config.json*:
 ```
 {
-  ".unit.js": {
+  "*.unit.js": {
     "command": "yarn unit ${filePath}"
   },
-  ".spec.js": {
+  "*.spec.js": {
     "command": "node js/test/jasmine.js ${filePath}"
   },
-  ".it.js": {
+  "*.it.js": {
     "command": "grunt karma:beaker -test=*${fileName}*"
   }
 }
@@ -71,10 +71,10 @@ You can also specify a different command for debugging, using the 'debugCommand'
 Example 2:
 ```
 {
-  ".unit.js": {
+  "*.unit.js": {
     "command": "yarn unit ${filePath}"
   },
-  ".ix.js": {
+  "*.ix.js": {
     "command": "jest ${filePath} --config=jest-beaker.config.js",
     "debugCommand": "jest ${filePath} --config=jest-beaker-debug.config.js"
   }

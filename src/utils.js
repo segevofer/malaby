@@ -2,6 +2,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const http = require('http');
 const logger = require('./logger');
+const globToRegExp = require('glob-to-regexp');
 
 function getConfigPath(CWD, configFromUserInput) {
     if (configFromUserInput) {
@@ -29,20 +30,17 @@ const isFlagOn = (argv, flagName) => !!_.find(argv, param => param === flagName)
 const buildContext = (filePath, config) => {
     const context = {
         filePath,
-        config: undefined
+        config: undefined,
+        matchingGlobs: []
     };
 
-    _.forEach(config, (suffixConfig, suffix) => {
-        const found = filePath.match(suffix);
-        const isMatch = _.head(found) === suffix;
+    _.forEach(config, (currentConfig, glob) => {
+        const regex = globToRegExp(glob);
+        const foundConfig = regex.test(filePath);
 
-        if (isMatch) {
-            if (context.config) {
-                logger.moreThanOneConfigFound(filePath, suffix, _.head(found));
-                throw(new Error(`More than one config found for ${filePath}`))
-            } else {
-                context.config = _.assign(suffixConfig, {suffix});
-            }
+        if (foundConfig) {
+            context.matchingGlobs.push(glob);
+            context.config = currentConfig;
         }
     });
 
@@ -79,7 +77,7 @@ const createConfigFile = configPath => {
     if (fs.existsSync(configPath)) {
         logger(`File already exist ${configPath}`);
     } else {
-        const configExample = require('../malaby-config-example');
+        const configExample = require('./malaby-config-example');
         fs.writeFileSync(configPath, JSON.stringify(configExample, null, 4));
     }
 };

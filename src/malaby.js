@@ -61,8 +61,11 @@ const currentVersion = require('../package').version;
     const fileName = path.basename(filePath); // only after filePath validation!
     const context = buildContext(filePath, config);
 
-    if (!context.config) {
+    if (context.matchingGlobs.length === 0) {
         logger.noMatchingTestsFound(filePath, configPath);
+        process.exit(1);
+    } else if (context.matchingGlobs.length > 1) {
+        logger.moreThanOneConfigFound(filePath, context.matchingGlobs);
         process.exit(1);
     }
 
@@ -73,7 +76,7 @@ const currentVersion = require('../package').version;
     }
 
     const commandString = buildCommandString(context.config, filePath, fileName, isDebug, inspectPort);
-    logger.commandAndSuffixFound(context.config.suffix, filePath, commandString);
+    logger.commandFound(filePath, commandString);
 
     const commandInArray = _.compact([
         isDebug && 'ndb',
