@@ -23,7 +23,8 @@ const isInitCommand = process.argv.length === 3 && process.argv[2] === 'init';
 const isWatchMode = isFlagOn(process.argv, '--watch');
 const isDebug = isFlagOn(process.argv, '--debug');
 const isAskingForVersion = isFlagOn(process.argv, '--version');
-
+const isInspect = _.find(process.execArgv, param => param && _.startsWith(param, '--inspect-brk'));
+const inspectPort = isInspect && isInspect.split('=')[1];
 
 const configPath = getConfigPath(CWD, configFromUserInput);
 const config = configPath && getConfig(configPath);
@@ -65,14 +66,13 @@ const currentVersion = require('../package').version;
         process.exit(1);
     }
 
-    const fileAbsolutePath = path.join(CWD, filePath);
-    const testFileExists = fs.existsSync(fileAbsolutePath);
+    const testFileExists = fs.existsSync(filePath) || fs.existsSync(path.join(CWD, filePath));
     if (!testFileExists) {
-        logger.testFileDoesNotExist(CWD, fileAbsolutePath);
+        logger.testFileDoesNotExist(filePath);
         process.exit(1);
     }
 
-    const commandString = buildCommandString(context.config, filePath, fileName, isDebug);
+    const commandString = buildCommandString(context.config, filePath, fileName, isDebug, inspectPort);
     logger.commandAndSuffixFound(context.config.suffix, filePath, commandString);
 
     const commandInArray = _.compact([

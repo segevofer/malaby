@@ -43,7 +43,7 @@ logger.noMatchingTestsFound = (filePath, configPath) => {
     Check your configuration in ${configPath}`));
 };
 
-logger.testFileDoesNotExist = (CWD, fileAbsolutePath) => {
+logger.testFileDoesNotExist = fileAbsolutePath => {
     log(`Test file doesn't exist: ${red(fileAbsolutePath)}`);
 };
 

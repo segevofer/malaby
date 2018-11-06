@@ -49,14 +49,14 @@ const buildContext = (filePath, config) => {
     return context;
 };
 
-const buildCommandString = ({command, debugCommand = undefined}, filePath, fileName, isDebug) => {
-    if (debugCommand && isDebug) {
-        return debugCommand
-            .replace('${filePath}', filePath)
-            .replace('${fileName}', fileName);
+const buildCommandString = ({command, debugCommand = undefined}, filePath, fileName, isDebug, inspectPort) => {
+    let cmd = debugCommand && isDebug ? debugCommand : command;
+
+    if (inspectPort) {
+        cmd = cmd.replace('node ', `node --inspect-brk=${Number(inspectPort) + 1} `);
     }
 
-    return command
+    return cmd
         .replace('${filePath}', filePath)
         .replace('${fileName}', fileName);
 };
