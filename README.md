@@ -8,6 +8,7 @@ Easy and fast test runner to run any kind of test
 * Easily debug any node based test using --debug
 * Helps big teams collaborate
 
+use this [wiki page to configure your IDE](https://github.com/segevofer/malaby/wiki/Configure-Malaby-on-different-IDE's)
 
 ## Getting Started
 
