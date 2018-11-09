@@ -11,11 +11,15 @@ Easy and fast test runner to run any kind of test
 
 ## Getting Started
 
-install malaby globally:
+install malaby (recommended to install globally):
 
 ```
 
-npm i -g malaby
+npm i -g malaby # recommended
+
+## OR ##
+
+npm i --save-dev malaby
 
 ```
 
@@ -49,37 +53,57 @@ Example:
 *root-of-project/malaby-config.json*:
 ```
 {
-  "*.unit.js": {
-    "command": "yarn unit ${filePath}"
-  },
-  "*.spec.js": {
-    "command": "node js/test/jasmine.js ${filePath}"
-  },
-  "*.it.js": {
-    "command": "grunt karma:beaker -test=*${fileName}*"
-  }
+  "tests": [
+    {
+      "pattern": "*.unit.js",
+      "command": "yarn unit-test ${filePath}",
+      "debugCommand": "grunt someOtherTask -test=*${fileName}* --debug",
+      "filesToWatch": [
+        ".json",
+        ".jsx"
+      ]
+    },
+    {
+      "pattern": "*.spec.js",
+      "command": "node js/test/jasmine.js ${filePath}"
+    }
+  ],
+  "filesToWatch": [
+    ".js"
+  ]
 }
 ```
 
-In this file you can specify suffixes of test files in your project and their different commands for running and debugging.
-You can either use ${filePath} which is the absolute path of the file, or ${fileName} to use some regex matcher when running the test.
-You can use any CLI command that is installed in your node_modules (node, npm, grunt, eslint, etc...)
+In this file, declare the test types in your project, under "tests" array.
+
+Each test looks like this:
+
+* **pattern (mandatory)** - a glob describing how to locate the tests.
+
+* **command (mandatory)** - how to run the test. You can use either ${filePath} or ${fileName}
+
+    ${filePath} - is the absolute path of the test file. for example: /path/to/yourFile.unit.js
+
+    ${fileName} - is the name of the file. for example: yourFile.unit.js
+
+* **debugCommand** - just like "command", but lets you run different command when --debug flag is on
+
+* **filesToWatch** - an array of file extensions to watch in the project, when --watch flag is on
 
 
-You can also specify a different command for debugging, using the 'debugCommand' key
 
-Example 2:
+Example of a single test config:
 ```
 {
-  "*.unit.js": {
-    "command": "yarn unit ${filePath}"
-  },
-  "*.ix.js": {
-    "command": "jest ${filePath} --config=jest-beaker.config.js",
-    "debugCommand": "jest ${filePath} --config=jest-beaker-debug.config.js"
-  }
+  "pattern": "*.unit.js",
+  "command": "yarn unit-test ${filePath}",
+  "debugCommand": "grunt someOtherTask -test=*${fileName}* --debug",
+  "filesToWatch": [
+    ".json",
+    ".jsx"
+  ]
 }
-```
+ ```
 
 ## Usage
 
@@ -91,7 +115,16 @@ Additional options:
 ```
    --debug: run ndb (https://www.npmjs.com/package/ndb)
    --watch: re-run the test every file change in the project
+   --config=path/to/config: run malaby with a different configuration file
 ```
+
+## a word about --watch
+By default, Malaby watch for .js file changes only.
+
+You can specify a global "filesToWatch" array or per test type under "tests" (like in the example above).
+
+You can use any CLI command that is installed in your node_modules (node, npm, grunt, eslint, etc...)
+
 
 ## Contributing
 
