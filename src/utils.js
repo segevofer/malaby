@@ -1,8 +1,10 @@
 const _ = require('lodash');
 const fs = require('fs');
+const path = require('path');
 const http = require('http');
 const logger = require('./logger');
 const globToRegExp = require('glob-to-regexp');
+const DEFAULT_FILES_TO_WATCH = ['.js'];
 
 function getConfigPath(CWD, configFromUserInput) {
     if (configFromUserInput) {
@@ -13,11 +15,22 @@ function getConfigPath(CWD, configFromUserInput) {
             return relativePath;
         } else if (fs.existsSync(absolutePath)) {
             return absolutePath;
+        } else if (fs.existsSync(`${relativePath}.js`)) {
+            return `${relativePath}.js`;
+        } else if (fs.existsSync(`${absolutePath}.js`)) {
+            return `${absolutePath}.js`;
         } else {
             return undefined;
         }
     }
-    return `${CWD}/malaby-config.json`;
+
+    if (fs.existsSync(path.join(CWD, 'malaby-config.json'))) {
+        return path.join(CWD, 'malaby-config.json');
+    } else if (fs.existsSync(path.join(CWD, 'malaby-config.js'))) {
+        return path.join(CWD, 'malaby-config.js');
+    }
+
+    return undefined;
 }
 
 function getConfig(configPath) {
@@ -31,16 +44,19 @@ const buildContext = (filePath, config) => {
     const context = {
         filePath,
         config: undefined,
-        matchingGlobs: []
+        matchingConfigs: [],
+        filesToWatch: config.filesToWatch
     };
 
-    _.forEach(config, (currentConfig, glob) => {
-        const regex = globToRegExp(glob);
+    _.forEach(config.tests, (currentConfig, key) => {
+        const pattern = currentConfig.pattern || key;
+        const regex = globToRegExp(pattern);
         const foundConfig = regex.test(filePath);
 
         if (foundConfig) {
-            context.matchingGlobs.push(glob);
-            context.config = currentConfig;
+            const matchingConfig = _.defaults(currentConfig, {pattern});
+            context.matchingConfigs.push(matchingConfig);
+            context.config = matchingConfig;
         }
     });
 
@@ -82,6 +98,13 @@ const createConfigFile = configPath => {
     }
 };
 
+const getFilesToWatch = context => _(DEFAULT_FILES_TO_WATCH)
+    .union(context.filesToWatch)
+    .union(context.config.filesToWatch) // additional filesToWatch from currentConfig
+    .compact()
+    .uniq()
+    .value();
+
 module.exports = {
     getConfigPath,
     getConfig,
@@ -89,5 +112,6 @@ module.exports = {
     buildContext,
     buildCommandString,
     fetchLatestVersion,
-    createConfigFile
+    createConfigFile,
+    getFilesToWatch
 };

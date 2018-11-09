@@ -1,12 +1,22 @@
 {
-  "*.unit.js": {
-    "command": "yarn unit-test ${filePath}"
-  },
-  "*.spec.js": {
-    "command": "node js/test/jasmine.js ${filePath}"
-  },
-  "*.it.js": {
-    "command": "grunt someTask -test=*${fileName}*",
-    "debugCommand": "grunt someOtherTask -test=*${fileName}* --debug"
-  }
+  "tests": [
+    {
+      "pattern": "*.unit.js",
+      "command": "yarn unit-test ${filePath}",
+      "debugCommand": "",
+      "filesToWatch": []
+    },
+    {
+      "pattern": "*.it.js",
+      "command": "grunt someTask -test=*${fileName}*",
+      "debugCommand": "grunt someOtherTask -test=*${fileName}* --debug",
+      "filesToWatch": [
+        ".json",
+        ".jsx"
+      ]
+    }
+  ],
+  "filesToWatch": [
+    ".js"
+  ]
 }

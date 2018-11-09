@@ -9,12 +9,12 @@ class TestRunner {
     }
 
     run({onStart, onFinish}) {
-        const command = spawn(this.command, this.commandArgs);
-
         onStart();
-        command.stdout.on('data', logger.encoded);
-        command.stderr.on('data', logger.encoded);
-        command.on('close', onFinish);
+        const childProcess = spawn(this.command, this.commandArgs);
+
+        childProcess.stdout.on('data', logger.encoded);
+        childProcess.stderr.on('data', logger.encoded);
+        childProcess.on('close', onFinish);
     }
 }
 

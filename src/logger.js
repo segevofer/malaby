@@ -11,6 +11,10 @@ logger.encoded = data => {
     log(`${data}`);
 };
 
+logger.debuggerDisconnected = () => {
+    log('Debugger disconnected');
+};
+
 logger.malabyIsHappy = () => {
     log(`   ${green('🍧 Malaby Is Happy')}\n\n`);
 };
@@ -32,10 +36,10 @@ logger.couldNotFileConfigurationFile = (configPath, configFromUserInput) => {
     }
 };
 
-logger.moreThanOneConfigFound = (filePath, matchingGlobs) => {
-    log(red(`More than one config found for ${filePath}\n`));
-    _.forEach(matchingGlobs, (glob, index) => {
-        log(red(`   ${index + 1} - ${glob}`));
+logger.moreThanOneConfigFound = (filePath, matchingConfigs) => {
+    log(red(`More than one configs were found for ${filePath}\n`));
+    _.forEach(matchingConfigs, ({pattern}, index) => {
+        log(red(`   ${index + 1} - ${pattern}`));
     });
 };
 
@@ -49,10 +53,6 @@ logger.testFileDoesNotExist = fileAbsolutePath => {
     log(`Test file doesn't exist: ${red(fileAbsolutePath)}`);
 };
 
-logger.commandFound = (filePath, commandString) => {
-    log(`File: ${green(filePath)}\nCommand: ${green(commandString)}`);
-};
-
 logger.testInProgress = () => {
     log(yellow(`Test in progress...\n`));
 };
@@ -61,7 +61,8 @@ logger.restartTestInProgress = () => {
     log(yellow(`Running the test again...\n`));
 };
 
-logger.runningCommand = command => {
+logger.runningCommand = (filePath, command) => {
+    log(`File: ${green(filePath)}`);
     log(`Running: ${green(command)}`);
 };
 
@@ -70,6 +71,10 @@ logger.mustUpdateVersion = () => {
     A new version of malaby is available
     please run ${green('npm update -g malaby')} to update
     `)
+};
+
+logger.logFileChanged = filePath => {
+    log(`File changed: ${yellow(filePath)}`);
 };
 
 module.exports = logger;

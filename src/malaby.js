@@ -9,7 +9,8 @@ const {
     buildCommandString,
     fetchLatestVersion,
     createConfigFile,
-    getConfigPath
+    getConfigPath,
+    getFilesToWatch
 } = require('./utils');
 
 const logger = require('./logger');
@@ -40,7 +41,7 @@ const currentVersion = require('../package').version;
 
     if (currentVersion !== latestVersion) {
         logger.mustUpdateVersion();
-        process.exit(1);
+        process.exit(1); // eslint-disable-line
     }
 
     if (isInitCommand) {
@@ -50,43 +51,43 @@ const currentVersion = require('../package').version;
 
     if (!config) {
         logger.couldNotFileConfigurationFile(configPath, configFromUserInput);
-        process.exit(1);
+        process.exit(1); // eslint-disable-line
     }
 
     if (!filePath) {
         logger.help();
-        process.exit(1);
+        process.exit(1); // eslint-disable-line
     }
 
     const fileName = path.basename(filePath); // only after filePath validation!
     const context = buildContext(filePath, config);
 
-    if (context.matchingGlobs.length === 0) {
+    if (context.matchingConfigs.length === 0) {
         logger.noMatchingTestsFound(filePath, configPath);
-        process.exit(1);
-    } else if (context.matchingGlobs.length > 1) {
-        logger.moreThanOneConfigFound(filePath, context.matchingGlobs);
-        process.exit(1);
+        process.exit(1); // eslint-disable-line
+    } else if (context.matchingConfigs.length > 1) {
+        logger.moreThanOneConfigFound(filePath, context.matchingConfigs);
+        process.exit(1); // eslint-disable-line
     }
 
     const testFileExists = fs.existsSync(filePath) || fs.existsSync(path.join(CWD, filePath));
     if (!testFileExists) {
         logger.testFileDoesNotExist(filePath);
-        process.exit(1);
+        process.exit(1); // eslint-disable-line
     }
 
     const commandString = buildCommandString(context.config, filePath, fileName, isDebug, inspectPort);
-    logger.commandFound(filePath, commandString);
-
     const commandInArray = _.compact([
         isDebug && 'ndb',
         'npx',
         ...commandString.split(' ')
     ]);
 
-    logger.runningCommand(commandInArray.join(' '));
+    logger.runningCommand(filePath, commandInArray.join(' '));
+
     const command = _.head(commandInArray);
     const commandArgs = _.tail(commandInArray);
+    const filesToWatch = getFilesToWatch(context);
 
-    malabyRunner(command, commandArgs, {CWD, isWatchMode, isDebug});
+    malabyRunner(command, commandArgs, {CWD, isWatchMode, isDebug, filesToWatch});
 })();
