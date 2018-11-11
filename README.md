@@ -119,6 +119,8 @@ Additional options:
    --config=path/to/config: run malaby with a different configuration file
 ```
 
+You can easily [configure your IDE to use Malaby](https://github.com/segevofer/malaby/wiki/Configure-Malaby-on-different-IDE's).
+
 ## a word about --watch
 By default, Malaby watch for .js file changes only.
 
