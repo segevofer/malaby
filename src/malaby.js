@@ -45,7 +45,7 @@ const currentVersion = require('../package').version;
     }
 
     if (isInitCommand) {
-        createConfigFile(configPath);
+        createConfigFile(path.join(CWD, 'malaby-config.json'));
         return;
     }
 
