@@ -4,7 +4,6 @@ const path = require('path');
 
 const {
     getConfig,
-    isFlagOn,
     buildContext,
     buildCommandString,
     fetchLatestVersion,
@@ -17,13 +16,17 @@ const logger = require('./logger');
 const malabyRunner = require('./malabyRunner');
 
 const CWD = process.cwd();
-const userInputConfigArg = _.find(process.argv, param => param && _.startsWith(param, '--config'));
-const filePath = _.find(process.argv, param => param && _.endsWith(param, '.js'));
-const configFromUserInput = userInputConfigArg && userInputConfigArg.split('=')[1];
-const isInitCommand = process.argv.length === 3 && process.argv[2] === 'init';
-const isWatchMode = isFlagOn(process.argv, '--watch');
-const isDebug = isFlagOn(process.argv, '--debug');
-const isAskingForVersion = isFlagOn(process.argv, '--version');
+const argv = require('minimist')(process.argv.slice(2));
+
+const filePath = _.find(argv._, pathToFile => {
+    return pathToFile ? fs.existsSync(path.join(CWD, pathToFile)) || fs.existsSync(pathToFile) : undefined;
+});
+
+const configFromUserInput = argv.config;
+const isWatchMode = argv.watch;
+const isDebug = argv.debug;
+const isInitCommand = argv._.length === 1 && _.head(argv._) === 'init';
+
 const isInspect = _.find(process.execArgv, param => param && _.startsWith(param, '--inspect-brk'));
 const inspectPort = isInspect && isInspect.split('=')[1];
 
@@ -32,15 +35,15 @@ const config = configPath && getConfig(configPath);
 const currentVersion = require('../package').version;
 
 (async () => {
-    if (isAskingForVersion) {
+    if (argv.version) {
         logger(currentVersion);
         return;
     }
 
-    const latestVersion = await fetchLatestVersion();
+    const latestVersion = await fetchLatestVersion(currentVersion);
 
     if (currentVersion !== latestVersion) {
-        logger.mustUpdateVersion();
+        logger.mustUpdateVersion(latestVersion);
         process.exit(1); // eslint-disable-line
     }
 

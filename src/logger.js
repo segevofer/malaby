@@ -66,10 +66,10 @@ logger.runningCommand = (filePath, command) => {
     log(`Running: ${green(command)}`);
 };
 
-logger.mustUpdateVersion = () => {
+logger.mustUpdateVersion = latestVersion => {
     log(`
-    A new version of malaby is available
-    please run ${green('npm update -g malaby')} to update
+    A new version of malaby is available: ${latestVersion}
+    run ${green('npm i -g malaby')}
     `)
 };
 

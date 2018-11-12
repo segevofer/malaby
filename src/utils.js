@@ -38,8 +38,6 @@ function getConfig(configPath) {
     return isConfigFileExists ? require(configPath) : undefined;
 }
 
-const isFlagOn = (argv, flagName) => !!_.find(argv, param => param === flagName);
-
 const buildContext = (filePath, config) => {
     const context = {
         filePath,
@@ -75,18 +73,18 @@ const buildCommandString = ({command, debugCommand = undefined}, filePath, fileN
         .replace('${fileName}', fileName);
 };
 
-const fetchLatestVersion = () => new Promise((resolve, reject) => {
+const fetchLatestVersion = currentVersion => new Promise(resolve => {
     http.get('http://registry.npmjs.org/malaby', response => {
         let body = '';
         response.on('data', d => body += d);
-        response.on('error', err => reject(err));
-        response.on('err', err => reject(err));
+        response.on('error', () => resolve(currentVersion));
+        response.on('err', () => resolve(currentVersion));
         response.on('end', () => {
             const parsed = JSON.parse(body);
             const latestVersion = parsed['dist-tags'].latest;
             resolve(latestVersion);
         });
-    });
+    }).on('error' , () => resolve(currentVersion));
 });
 
 const createConfigFile = configPath => {
@@ -108,7 +106,6 @@ const getFilesToWatch = context => _(DEFAULT_FILES_TO_WATCH)
 module.exports = {
     getConfigPath,
     getConfig,
-    isFlagOn,
     buildContext,
     buildCommandString,
     fetchLatestVersion,
