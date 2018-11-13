@@ -5,6 +5,10 @@ const log = function (msg = '') {
     console.log(msg); // eslint-disable-line
 };
 
+const logIndent = msg => {
+    console.log(`    ${msg}`); // eslint-disable-line
+};
+
 const logger = log;
 
 logger.encoded = data => {
@@ -16,16 +20,17 @@ logger.debuggerDisconnected = () => {
 };
 
 logger.malabyIsHappy = () => {
-    log(`   ${green('🍧 Malaby Is Happy')}\n\n`);
+    logIndent(`${green('🍧 Malaby Is Happy')}\n\n`);
 };
 
 logger.help = () => {
-    log(red(`\n   Please supply Malaby a file to test! something like this:`));
-    log(`   ${yellow('<your-project>')}/${green('malaby')} path/to/testFile.unit.spec.it.ix.something.js\n`);
-    log(`   ${underline('Additional options:')}`);
-    log(`   --debug: run ndb (https://www.npmjs.com/package/ndb)`);
-    log(`   --watch: re-run the test every file change in the project`);
-    log(`   --config: specify different config file --config=different-malaby-config.json`);
+    log();
+    logIndent(red(`Please supply Malaby a file to test! something like this:`));
+    logIndent(`${yellow('<your-project>')}/${green('malaby')} path/to/testFile.unit.spec.it.ix.something.js\n`);
+    logIndent(`${underline('Additional options:')}`);
+    logIndent(`--debug: run ndb (https://www.npmjs.com/package/ndb)`);
+    logIndent(`--watch: re-run the test every file change in the project`);
+    logIndent(`--config: specify different config file --config=different-malaby-config.json`);
 };
 
 logger.couldNotFileConfigurationFile = (configPath, configFromUserInput) => {
@@ -39,14 +44,14 @@ logger.couldNotFileConfigurationFile = (configPath, configFromUserInput) => {
 logger.moreThanOneConfigFound = (filePath, matchingConfigs) => {
     log(red(`More than one configs were found for ${filePath}\n`));
     _.forEach(matchingConfigs, ({pattern}, index) => {
-        log(red(`   ${index + 1} - ${pattern}`));
+        logIndent(red(`${index + 1} - ${pattern}`));
     });
 };
 
 logger.noMatchingTestsFound = (filePath, configPath) => {
-    log(red(`
-    No matching tests found for ${filePath}
-    Check your configuration in ${configPath}`));
+    log();
+    logIndent(red(`No matching tests found for ${filePath}`));
+    logIndent(red(`Check your configuration in ${configPath}`));
 };
 
 logger.testFileDoesNotExist = fileAbsolutePath => {
@@ -67,10 +72,19 @@ logger.runningCommand = (filePath, command) => {
 };
 
 logger.mustUpdateVersion = latestVersion => {
-    log(`
-    A new version of malaby is available: ${latestVersion}
-    run ${green('npm i -g malaby')}
-    `)
+    log();
+    logIndent(`A new version of malaby is available: ${latestVersion}`);
+    logIndent(`run ${green('npm i -g malaby')}\n`);
+};
+
+logger.fileAlreadyExist = configPath => {
+    log(red(`File already exist ${configPath}`));
+};
+
+logger.configFileWritten = configPath => {
+    log();
+    logIndent(`Successfully written malaby-config file.`);
+    logIndent(`edit file ${green(configPath)} with your configuration`);
 };
 
 logger.logFileChanged = filePath => {

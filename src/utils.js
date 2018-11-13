@@ -89,10 +89,11 @@ const fetchLatestVersion = currentVersion => new Promise(resolve => {
 
 const createConfigFile = configPath => {
     if (fs.existsSync(configPath)) {
-        logger(`File already exist ${configPath}`);
+        logger.fileAlreadyExist(configPath);
     } else {
         const configExample = require('./malaby-config-example');
         fs.writeFileSync(configPath, JSON.stringify(configExample, null, 4));
+        logger.configFileWritten(configPath);
     }
 };
 
