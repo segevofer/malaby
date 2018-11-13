@@ -74,7 +74,7 @@ logger.runningCommand = (filePath, command) => {
 logger.mustUpdateVersion = latestVersion => {
     log();
     logIndent(`A new version of malaby is available: ${latestVersion}`);
-    logIndent(`run ${green('npm i -g malaby')}\n`);
+    logIndent(`run ${green('npm update -g malaby')}\n`);
 };
 
 logger.fileAlreadyExist = configPath => {
