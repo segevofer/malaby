@@ -61,7 +61,9 @@ const buildContext = (filePath, config) => {
     return context;
 };
 
-const buildCommandString = ({command, debugCommand = undefined}, filePath, fileName, isDebug, inspectPort) => {
+const buildCommandString = (config, CWD, filePath, options) => {
+    const {command, debugCommand} = config;
+    const {isDebug, inspectPort} = options;
     let cmd = debugCommand && isDebug ? debugCommand : command;
 
     if (inspectPort) {
@@ -70,7 +72,7 @@ const buildCommandString = ({command, debugCommand = undefined}, filePath, fileN
 
     return cmd
         .replace('${filePath}', filePath)
-        .replace('${fileName}', fileName);
+        .replace('${fileName}', path.basename(filePath));
 };
 
 const fetchLatestVersion = currentVersion => new Promise(resolve => {

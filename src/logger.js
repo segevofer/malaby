@@ -28,13 +28,14 @@ logger.help = () => {
     logIndent(red(`Please supply Malaby a file to test! something like this:`));
     logIndent(`${yellow('<your-project>')}/${green('malaby')} path/to/testFile.unit.spec.it.ix.something.js\n`);
     logIndent(`${underline('Additional options:')}`);
-    logIndent(`--debug: run ndb (https://www.npmjs.com/package/ndb)`);
-    logIndent(`--watch: re-run the test every file change in the project`);
-    logIndent(`--config: specify different config file --config=different-malaby-config.json`);
+    logIndent(`--watch      re-run the test every file change in the project`);
+    logIndent(`--debug      run debugCommand for this test, if found in malaby-config.json file`);
+    logIndent(`--ndb        run the test with ndb (https://www.npmjs.com/package/ndb)`);
+    logIndent(`--config     specify different config file --config=different-malaby-config.json`);
 };
 
-logger.couldNotFileConfigurationFile = (configPath, configFromUserInput) => {
-    const path = configFromUserInput || configPath;
+logger.couldNotFileConfigurationFile = (defaultConfigPath, configFromUserInput) => {
+    const path = configFromUserInput || defaultConfigPath;
     log(`${red('Could not find configuration file')} ${yellow(path)}`);
     if (!configFromUserInput) {
         log(`type ${green('malaby init')} to create it`);

@@ -25,12 +25,15 @@ const filePath = _.find(argv._, pathToFile => {
 const configFromUserInput = argv.config;
 const isWatchMode = argv.watch;
 const isDebug = argv.debug;
+const isNdb = argv.ndb;
+const isHelp = argv.help;
 const isInitCommand = argv._.length === 1 && _.head(argv._) === 'init';
 
 const isInspect = _.find(process.execArgv, param => param && _.startsWith(param, '--inspect-brk'));
 const inspectPort = isInspect && isInspect.split('=')[1];
 
 const configPath = getConfigPath(CWD, configFromUserInput);
+const defaultConfigPath = path.join(CWD, 'malaby-config.json');
 const config = configPath && getConfig(configPath);
 const currentVersion = require('../package').version;
 
@@ -48,12 +51,17 @@ const currentVersion = require('../package').version;
     }
 
     if (isInitCommand) {
-        createConfigFile(path.join(CWD, 'malaby-config.json'));
+        createConfigFile(defaultConfigPath);
         return;
     }
 
+    if (isHelp) {
+        logger.help();
+        process.exit(1); // eslint-disable-line
+    }
+
     if (!config) {
-        logger.couldNotFileConfigurationFile(configPath, configFromUserInput);
+        logger.couldNotFileConfigurationFile(defaultConfigPath, configFromUserInput);
         process.exit(1); // eslint-disable-line
     }
 
@@ -62,7 +70,6 @@ const currentVersion = require('../package').version;
         process.exit(1); // eslint-disable-line
     }
 
-    const fileName = path.basename(filePath); // only after filePath validation!
     const context = buildContext(filePath, config);
 
     if (context.matchingConfigs.length === 0) {
@@ -79,9 +86,9 @@ const currentVersion = require('../package').version;
         process.exit(1); // eslint-disable-line
     }
 
-    const commandString = buildCommandString(context.config, filePath, fileName, isDebug, inspectPort);
+    const commandString = buildCommandString(context.config, CWD, filePath, {isDebug, inspectPort});
     const commandInArray = _.compact([
-        isDebug && 'ndb',
+        isNdb && 'ndb',
         'npx',
         ...commandString.split(' ')
     ]);
