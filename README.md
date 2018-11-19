@@ -27,7 +27,7 @@ npm i --save-dev malaby
 ### Prerequisites
 
 You must have [npx](https://www.npmjs.com/package/npx) installed 
-(or an npm version that uses npx) and [ndb](https://www.npmjs.com/package/ndb) 
+(or an npm version bigger than 5.2.0 that uses npx) and [ndb](https://www.npmjs.com/package/ndb)
 if you want to debug tests
 
 It is recommended to install them globally
@@ -114,9 +114,10 @@ malaby path/to/testFile.yourSuffix.js
 
 Additional options:
 ```
-   --debug: run ndb (https://www.npmjs.com/package/ndb)
-   --watch: re-run the test every file change in the project
-   --config=path/to/config: run malaby with a different configuration file
+   --watch      re-run the test every file change in the project
+   --debug      run debugCommand for this test, if found in malaby-config.json file
+   --ndb        run the test with ndb (https://www.npmjs.com/package/ndb)
+   --config     specify different config file --config=different-malaby-config.json
 ```
 
 You can easily [configure your IDE to use Malaby](https://github.com/segevofer/malaby/wiki/Configure-Malaby-on-different-IDE's).
