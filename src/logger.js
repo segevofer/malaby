@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const path = require('path');
 const {red, yellow, green, underline} = require('chalk');
 
 const log = function (msg = '') {
@@ -21,6 +22,16 @@ logger.debuggerDisconnected = () => {
 
 logger.malabyIsHappy = () => {
     logIndent(`${green('🍧 Malaby Is Happy')}\n\n`);
+};
+
+logger.couldNotLocateTestFile = (CWD, potentialTestFiles) => {
+    log(red(`Could not locate the test file you are trying to run.`));
+    log(underline(red(`You are probably not running it in the right directory\n`)));
+
+    logIndent(`Malaby was looking for these file(s):`);
+    _.forEach(potentialTestFiles, potentialTestFile => logIndent(red(path.join(CWD, potentialTestFile))));
+
+    log(`\n\nType ${green('malaby --help')} to learn more, or checkout https://www.npmjs.com/package/malaby\n\n`);
 };
 
 logger.help = () => {

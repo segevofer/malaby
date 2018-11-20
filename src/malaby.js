@@ -66,7 +66,7 @@ const currentVersion = require('../package').version;
     }
 
     if (!filePath) {
-        logger.help();
+        logger.couldNotLocateTestFile(CWD, argv._);
         process.exit(1); // eslint-disable-line
     }
 
