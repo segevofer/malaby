@@ -4,8 +4,8 @@ const watch = require('node-watch');
 const logger = require('./logger');
 const TestRunner = require('./TestRunner');
 
-const malabyRunner = (command, commandArgs, { CWD, isWatchMode, isDebug, filesToWatch }) => { // eslint-disable-line
-    const runTest = new TestRunner(command, commandArgs);
+const malabyRunner = (command, commandArgs, { cwd, isWatchMode, isDebug, filesToWatch }) => { // eslint-disable-line
+    const runTest = new TestRunner(command, commandArgs, cwd);
 
     let inProgress = false;
     let shouldRunNextTime = false;
@@ -44,7 +44,7 @@ const malabyRunner = (command, commandArgs, { CWD, isWatchMode, isDebug, filesTo
             filter: file => _.includes(filesToWatch, path.extname(file))
         };
 
-        watch(CWD, watchConfig, (event, filePath) => {
+        watch(cwd, watchConfig, (event, filePath) => {
             logger.logFileChanged(filePath);
             if (inProgress) {
                 shouldRunNextTime = true;

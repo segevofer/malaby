@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const path = require('path');
 const {
-    red, yellow, green, underline,
+    red, yellow, green, underline, gray
 } = require('chalk');
 
 const log = (msg = '') => {
@@ -34,7 +34,7 @@ logger.pleaseSupplyTestFile = () => {
 logger.couldNotLocateTestFile = (CWD, potentialTestFiles) => {
     if (potentialTestFiles.length) {
         log(red('Could not locate the test file you are trying to run.'));
-        log(underline(red('You are probably not running it in the right directory\n')));
+        log(underline(red('Check your path to the test file\n')));
         logIndent('Malaby was looking for these file(s):');
         _.forEach(potentialTestFiles, (potentialTestFile) => {
             logIndent(red(path.join(CWD, potentialTestFile)));
@@ -89,7 +89,8 @@ logger.restartTestInProgress = () => {
     log(yellow('Running the test again...\n'));
 };
 
-logger.runningCommand = (filePath, command) => {
+logger.runningCommand = (filePath, cwd, command) => {
+    log(gray(`Running test from: ${cwd}`));
     log(`File: ${green(filePath)}`);
     log(`Running: ${green(command)}`);
 };

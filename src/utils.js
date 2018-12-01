@@ -2,18 +2,18 @@ const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 const r2 = require('r2');
+const findUp = require('find-up');
 const globToRegExp = require('glob-to-regexp');
 const logger = require('./logger');
 const malabyConfigExample = require('./malaby-config-example');
 
 const DEFAULT_FILES_TO_WATCH = ['.js'];
 
-function getConfigPath(CWD, configFromUserInput) {
+function getConfigPath(CWD, testFileDir, configFromUserInput) {
     if (configFromUserInput) {
-        const relativePath = `${CWD}/${configFromUserInput}`;
+        const relativePath = path.join(CWD, configFromUserInput);
         const absolutePath = configFromUserInput;
 
-        // TODO: change this to use path search backwards
         if (fs.existsSync(relativePath)) {
             return relativePath;
         }
@@ -29,14 +29,22 @@ function getConfigPath(CWD, configFromUserInput) {
         return undefined;
     }
 
-    if (fs.existsSync(path.join(CWD, 'malaby-config.json'))) {
-        return path.join(CWD, 'malaby-config.json');
-    }
-    if (fs.existsSync(path.join(CWD, 'malaby-config.js'))) {
-        return path.join(CWD, 'malaby-config.js');
-    }
+    return findUp.sync('malaby-config.json', { cwd: testFileDir }) || findUp.sync('malaby-config.js', { cwd: testFileDir });
+}
 
-    return undefined;
+function getTestFileAbsolutePath(argv, CWD) {
+    let result = '';
+    _.forEach(argv._, (pathToFile) => {
+        if (!pathToFile) {
+            return;
+        }
+        if (fs.existsSync(path.join(CWD, pathToFile))) {
+            result = path.join(CWD, pathToFile);
+        } else if (fs.existsSync(pathToFile)) {
+            result = pathToFile;
+        }
+    });
+    return result;
 }
 
 function getConfig(configPath) {
@@ -67,13 +75,13 @@ const buildContext = (filePath, config) => {
     return context;
 };
 
-const buildCommandString = (config, CWD, filePath, options) => {
+const buildCommandString = (config, filePath, options) => {
     const { command, debugCommand } = config;
-    const { isDebug, isInspect } = options;
+    const { isDebug, inspectPort } = options;
     let cmd = debugCommand && isDebug ? debugCommand : command;
 
-    if (isInspect) {
-        cmd = cmd.replace('node ', 'node --inspect '); // TODO: check that it works!
+    if (inspectPort) {
+        cmd = cmd.replace('node ', `node --inspect-brk=${Number(inspectPort) + 1} `);
     }
 
     return cmd
@@ -104,6 +112,7 @@ const getFilesToWatch = context => _(DEFAULT_FILES_TO_WATCH)
 
 module.exports = {
     getConfigPath,
+    getTestFileAbsolutePath,
     getConfig,
     buildContext,
     buildCommandString,

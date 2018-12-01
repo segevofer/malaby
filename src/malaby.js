@@ -10,6 +10,7 @@ const {
     fetchLatestVersion,
     createConfigFile,
     getConfigPath,
+    getTestFileAbsolutePath,
     getFilesToWatch
 } = require('./utils');
 
@@ -18,10 +19,8 @@ const malabyRunner = require('./malabyRunner');
 const currentVersion = require('../package').version;
 
 const CWD = process.cwd();
-
-const filePath = _.find(argv._, (pathToFile) => { // eslint-disable-line arrow-body-style
-    return pathToFile ? fs.existsSync(path.join(CWD, pathToFile)) || fs.existsSync(pathToFile) : undefined;
-});
+const testFileAbsolutePath = getTestFileAbsolutePath(argv, CWD);
+const testFileDir = path.dirname(testFileAbsolutePath);
 
 const configFromUserInput = argv.config;
 const isWatchMode = argv.watch;
@@ -31,11 +30,11 @@ const isHelp = argv.help;
 const isInitCommand = argv._.length === 1 && _.head(argv._) === 'init';
 
 const isInspect = _.find(process.execArgv, param => param && _.startsWith(param, '--inspect'));
-// const inspectPort = isInspect && isInspect.split('=')[1];
+const inspectPort = isInspect && isInspect.split('=')[1];
 
-const configPath = getConfigPath(CWD, configFromUserInput);
-const defaultConfigPath = path.join(CWD, 'malaby-config.json');
+const configPath = getConfigPath(CWD, testFileDir, configFromUserInput);
 const config = configPath && getConfig(configPath);
+const defaultConfigPath = path.join(CWD, 'malaby-config.json');
 
 (async () => {
     if (argv.version) {
@@ -60,44 +59,44 @@ const config = configPath && getConfig(configPath);
         process.exit(1);
     }
 
+    if (!testFileAbsolutePath) {
+        logger.couldNotLocateTestFile(CWD, argv._);
+        process.exit(1);
+    }
+
     if (!config) {
         logger.couldNotFileConfigurationFile(defaultConfigPath, configFromUserInput);
         process.exit(1);
     }
 
-    if (!filePath) {
-        logger.couldNotLocateTestFile(CWD, argv._);
-        process.exit(1);
-    }
-
-    const context = buildContext(filePath, config);
+    const context = buildContext(testFileAbsolutePath, config);
+    const configPathCwd = path.dirname(configPath);
 
     if (context.matchingConfigs.length === 0) {
-        logger.noMatchingTestsFound(filePath, configPath);
+        logger.noMatchingTestsFound(testFileAbsolutePath, configPath);
         process.exit(1);
     } else if (context.matchingConfigs.length > 1) {
-        logger.moreThanOneConfigFound(filePath, context.matchingConfigs);
+        logger.moreThanOneConfigFound(testFileAbsolutePath, context.matchingConfigs);
         process.exit(1);
     }
 
-    const testFileExists = fs.existsSync(filePath) || fs.existsSync(path.join(CWD, filePath));
-    if (!testFileExists) {
-        logger.testFileDoesNotExist(filePath);
+    if (!fs.existsSync(testFileAbsolutePath)) {
+        logger.testFileDoesNotExist(testFileAbsolutePath);
         process.exit(1);
     }
 
-    const commandString = buildCommandString(context.config, CWD, filePath, { isDebug, isInspect });
+    const commandString = buildCommandString(context.config, testFileAbsolutePath, { isDebug, inspectPort });
     const commandInArray = _.compact([
         isNdb && 'ndb',
         'npx',
         ...commandString.split(' ')
     ]);
 
-    logger.runningCommand(filePath, commandInArray.join(' '));
+    logger.runningCommand(testFileAbsolutePath, configPathCwd, commandInArray.join(' '));
 
     const command = _.head(commandInArray);
     const commandArgs = _.tail(commandInArray);
     const filesToWatch = getFilesToWatch(context);
 
-    malabyRunner(command, commandArgs, { CWD, isWatchMode, isDebug, filesToWatch });
+    malabyRunner(command, commandArgs, { cwd: configPathCwd, isWatchMode, isDebug, filesToWatch });
 })();
