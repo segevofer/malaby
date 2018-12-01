@@ -4,7 +4,7 @@ const watch = require('node-watch');
 const logger = require('./logger');
 const TestRunner = require('./TestRunner');
 
-module.exports = (command, commandArgs, {CWD, isWatchMode, isDebug, filesToWatch}) => {
+const malabyRunner = (command, commandArgs, { CWD, isWatchMode, isDebug, filesToWatch }) => { // eslint-disable-line
     const runTest = new TestRunner(command, commandArgs);
 
     let inProgress = false;
@@ -20,7 +20,7 @@ module.exports = (command, commandArgs, {CWD, isWatchMode, isDebug, filesToWatch
         logger.restartTestInProgress();
     };
 
-    const onFinish = exitCode => {
+    const onFinish = (exitCode) => {
         inProgress = false;
         if (exitCode === 0) {
             if (isDebug) {
@@ -30,11 +30,11 @@ module.exports = (command, commandArgs, {CWD, isWatchMode, isDebug, filesToWatch
             }
         } else if (shouldRunNextTime) {
             shouldRunNextTime = false;
-            runTest.run({onStart: onRestart, onFinish});
+            runTest.run({ onStart: onRestart, onFinish });
         }
     };
 
-    runTest.run({onStart, onFinish});
+    runTest.run({ onStart, onFinish });
 
     const shouldRunMultipleTimes = isWatchMode && !isDebug;
     if (shouldRunMultipleTimes) {
@@ -49,8 +49,10 @@ module.exports = (command, commandArgs, {CWD, isWatchMode, isDebug, filesToWatch
             if (inProgress) {
                 shouldRunNextTime = true;
             } else {
-                runTest.run({onStart: onRestart, onFinish});
+                runTest.run({ onStart: onRestart, onFinish });
             }
         });
     }
 };
+
+module.exports = malabyRunner;

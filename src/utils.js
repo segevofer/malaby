@@ -1,9 +1,11 @@
 const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
-const http = require('http');
-const logger = require('./logger');
+const r2 = require('r2');
 const globToRegExp = require('glob-to-regexp');
+const logger = require('./logger');
+const malabyConfigExample = require('./malaby-config-example');
+
 const DEFAULT_FILES_TO_WATCH = ['.js'];
 
 function getConfigPath(CWD, configFromUserInput) {
@@ -11,22 +13,26 @@ function getConfigPath(CWD, configFromUserInput) {
         const relativePath = `${CWD}/${configFromUserInput}`;
         const absolutePath = configFromUserInput;
 
+        // TODO: change this to use path search backwards
         if (fs.existsSync(relativePath)) {
             return relativePath;
-        } else if (fs.existsSync(absolutePath)) {
-            return absolutePath;
-        } else if (fs.existsSync(`${relativePath}.js`)) {
-            return `${relativePath}.js`;
-        } else if (fs.existsSync(`${absolutePath}.js`)) {
-            return `${absolutePath}.js`;
-        } else {
-            return undefined;
         }
+        if (fs.existsSync(absolutePath)) {
+            return absolutePath;
+        }
+        if (fs.existsSync(`${relativePath}.js`)) {
+            return `${relativePath}.js`;
+        }
+        if (fs.existsSync(`${absolutePath}.js`)) {
+            return `${absolutePath}.js`;
+        }
+        return undefined;
     }
 
     if (fs.existsSync(path.join(CWD, 'malaby-config.json'))) {
         return path.join(CWD, 'malaby-config.json');
-    } else if (fs.existsSync(path.join(CWD, 'malaby-config.js'))) {
+    }
+    if (fs.existsSync(path.join(CWD, 'malaby-config.js'))) {
         return path.join(CWD, 'malaby-config.js');
     }
 
@@ -52,7 +58,7 @@ const buildContext = (filePath, config) => {
         const foundConfig = regex.test(filePath);
 
         if (foundConfig) {
-            const matchingConfig = _.defaults(currentConfig, {pattern});
+            const matchingConfig = _.defaults(currentConfig, { pattern });
             context.matchingConfigs.push(matchingConfig);
             context.config = matchingConfig;
         }
@@ -62,12 +68,12 @@ const buildContext = (filePath, config) => {
 };
 
 const buildCommandString = (config, CWD, filePath, options) => {
-    const {command, debugCommand} = config;
-    const {isDebug, inspectPort} = options;
+    const { command, debugCommand } = config;
+    const { isDebug, isInspect } = options;
     let cmd = debugCommand && isDebug ? debugCommand : command;
 
-    if (inspectPort) {
-        cmd = cmd.replace('node ', `node --inspect-brk=${Number(inspectPort) + 1} `);
+    if (isInspect) {
+        cmd = cmd.replace('node ', 'node --inspect '); // TODO: check that it works!
     }
 
     return cmd
@@ -75,26 +81,16 @@ const buildCommandString = (config, CWD, filePath, options) => {
         .replace('${fileName}', path.basename(filePath));
 };
 
-const fetchLatestVersion = currentVersion => new Promise(resolve => {
-    http.get('http://registry.npmjs.org/malaby', response => {
-        let body = '';
-        response.on('data', d => body += d);
-        response.on('error', () => resolve(currentVersion));
-        response.on('err', () => resolve(currentVersion));
-        response.on('end', () => {
-            const parsed = JSON.parse(body);
-            const latestVersion = parsed['dist-tags'].latest;
-            resolve(latestVersion);
-        });
-    }).on('error' , () => resolve(currentVersion));
-});
+const fetchLatestVersion = async () => {
+    const response = await r2.get('http://registry.npmjs.org/malaby').json;
+    return _.get(response, ['dist-tags', 'latest']);
+};
 
-const createConfigFile = configPath => {
+const createConfigFile = (configPath) => {
     if (fs.existsSync(configPath)) {
         logger.fileAlreadyExist(configPath);
     } else {
-        const configExample = require('./malaby-config-example');
-        fs.writeFileSync(configPath, JSON.stringify(configExample, null, 4));
+        fs.writeFileSync(configPath, JSON.stringify(malabyConfigExample, null, 4));
         logger.configFileWritten(configPath);
     }
 };

@@ -1,11 +1,12 @@
 {
-  "extends": ["eslint:recommended", "plugin:node/recommended"],
+  "extends": ["airbnb"],
   "rules": {
-    "node/exports-style": ["error", "module.exports"],
-    "node/prefer-global/buffer": ["error", "always"],
-    "node/prefer-global/console": ["error", "always"],
-    "node/prefer-global/process": ["error", "always"],
-    "node/prefer-global/url-search-params": ["error", "always"],
-    "node/prefer-global/url": ["error", "always"]
+    "indent": ["error", 4],
+    "max-len": 0,
+    "global-require": 0,
+    "no-template-curly-in-string": 0,
+    "object-curly-newline": 0,
+    "comma-dangle": 0,
+    "import/no-dynamic-require": 0
   }
 }

@@ -1,6 +1,5 @@
+const { spawn } = require('child_process');
 const logger = require('./logger');
-
-const {spawn} = require('child_process');
 
 class TestRunner {
     constructor(command, commandArgs) {
@@ -8,7 +7,7 @@ class TestRunner {
         this.commandArgs = commandArgs;
     }
 
-    run({onStart, onFinish}) {
+    run({ onStart, onFinish }) {
         onStart();
         const childProcess = spawn(this.command, this.commandArgs);
 
