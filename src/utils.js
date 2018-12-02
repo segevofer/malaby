@@ -1,12 +1,13 @@
 const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
-const r2 = require('r2');
+const axios = require('axios');
 const findUp = require('find-up');
 const globToRegExp = require('glob-to-regexp');
 const logger = require('./logger');
 const malabyConfigExample = require('./malaby-config-example');
 
+const NPM_REGISTRY_URL = 'http://registry.npmjs.org/malaby';
 const DEFAULT_FILES_TO_WATCH = ['.js'];
 
 function getConfigPath(CWD, testFileDir, configFromUserInput) {
@@ -90,8 +91,13 @@ const buildCommandString = (config, filePath, options) => {
 };
 
 const fetchLatestVersion = async () => {
-    const response = await r2.get('http://registry.npmjs.org/malaby').json;
-    return _.get(response, ['dist-tags', 'latest']);
+    try {
+        const response = await axios.get(NPM_REGISTRY_URL);
+        return _.get(response.data, ['dist-tags', 'latest']);
+    } catch (e) {
+        console.log(e); // eslint-disable-line
+    }
+    return undefined;
 };
 
 const createConfigFile = (configPath) => {
