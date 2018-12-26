@@ -11,7 +11,8 @@ const {
     createConfigFile,
     getConfigPath,
     getTestFileAbsolutePath,
-    getFilesToWatch
+    getFilesToWatch,
+    getFilesToIgnore
 } = require('./utils');
 
 const logger = require('./logger');
@@ -97,6 +98,7 @@ const defaultConfigPath = path.join(CWD, 'malaby-config.json');
     const command = _.head(commandInArray);
     const commandArgs = _.tail(commandInArray);
     const filesToWatch = getFilesToWatch(context);
+    const filesToIgnore = getFilesToIgnore(context);
 
-    malabyRunner(command, commandArgs, { cwd: configPathCwd, isWatchMode, isDebug, filesToWatch });
+    malabyRunner(command, commandArgs, { cwd: configPathCwd, isWatchMode, isDebug, filesToWatch, filesToIgnore });
 })();

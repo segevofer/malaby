@@ -4,7 +4,7 @@ const watch = require('node-watch');
 const logger = require('./logger');
 const TestRunner = require('./TestRunner');
 
-const malabyRunner = (command, commandArgs, { cwd, isWatchMode, isDebug, filesToWatch }) => { // eslint-disable-line
+const malabyRunner = (command, commandArgs, { cwd, isWatchMode, isDebug, filesToWatch, filesToIgnore }) => { // eslint-disable-line
     const runTest = new TestRunner(command, commandArgs, cwd);
 
     let inProgress = false;
@@ -41,7 +41,10 @@ const malabyRunner = (command, commandArgs, { cwd, isWatchMode, isDebug, filesTo
         const watchConfig = {
             recursive: true,
             delay: 500,
-            filter: file => _.includes(filesToWatch, path.extname(file))
+            filter: (filePath) => {
+                const shouldReject = _.some(filesToIgnore, regex => regex.test(filePath));
+                return !shouldReject && _.includes(filesToWatch, path.extname(filePath));
+            }
         };
 
         watch(cwd, watchConfig, (event, filePath) => {

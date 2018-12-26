@@ -116,6 +116,8 @@ const getFilesToWatch = context => _(DEFAULT_FILES_TO_WATCH)
     .uniq()
     .value();
 
+const getFilesToIgnore = context => _.map(context.config.ignoreOnWatch, globToRegExp);
+
 module.exports = {
     getConfigPath,
     getTestFileAbsolutePath,
@@ -124,5 +126,6 @@ module.exports = {
     buildCommandString,
     fetchLatestVersion,
     createConfigFile,
-    getFilesToWatch
+    getFilesToWatch,
+    getFilesToIgnore
 };

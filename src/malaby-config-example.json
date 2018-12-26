@@ -13,6 +13,9 @@
       "filesToWatch": [
         ".json",
         ".jsx"
+      ],
+      "ignoreOnWatch": [
+        "*/dist/**/*.js"
       ]
     }
   ],
