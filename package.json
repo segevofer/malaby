@@ -1,6 +1,6 @@
 {
   "name": "malaby",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Easy and fast test runner to run any kind of test",
   "main": "malaby.js",
   "scripts": {
