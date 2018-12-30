@@ -78,11 +78,13 @@ const buildContext = (filePath, config) => {
 
 const buildCommandString = (config, filePath, options) => {
     const { command, debugCommand } = config;
-    const { isDebug, inspectPort } = options;
+    const { isDebug, isInspect, inspectPort } = options;
     let cmd = debugCommand && isDebug ? debugCommand : command;
 
     if (inspectPort) {
-        cmd = cmd.replace('node ', `node --inspect-brk=${Number(inspectPort) + 1} `);
+        cmd = cmd.replace('node ', `node --inspect-brk=${Number(inspectPort) + 1} `); // Hail to Webstorm
+    } else if (isDebug || isInspect) {
+        cmd = cmd.replace('node ', 'node --inspect '); // attach to normal node debugger
     }
 
     return cmd

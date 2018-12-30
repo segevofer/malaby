@@ -1,7 +1,10 @@
 const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
-const argv = require('minimist')(process.argv.slice(2));
+const minimist = require('minimist');
+
+const argv = minimist(process.argv.slice(2));
+const execArgv = minimist(process.execArgv);
 
 const {
     getConfig,
@@ -30,8 +33,8 @@ const isNdb = argv.ndb;
 const isHelp = argv.help;
 const isInitCommand = argv._.length === 1 && _.head(argv._) === 'init';
 
-const isInspect = _.find(process.execArgv, param => param && _.startsWith(param, '--inspect'));
-const inspectPort = isInspect && isInspect.split('=')[1];
+const isInspect = execArgv.inspect;
+const inspectPort = execArgv['inspect-brk'];
 
 const configPath = getConfigPath(CWD, testFileDir, configFromUserInput);
 const config = configPath && getConfig(configPath);
@@ -86,7 +89,7 @@ const defaultConfigPath = path.join(CWD, 'malaby-config.json');
         process.exit(1);
     }
 
-    const commandString = buildCommandString(context.config, testFileAbsolutePath, { isDebug, inspectPort });
+    const commandString = buildCommandString(context.config, testFileAbsolutePath, { isDebug, isInspect, inspectPort });
     const commandInArray = _.compact([
         isNdb && 'ndb',
         'npx',
