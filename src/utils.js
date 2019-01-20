@@ -78,8 +78,15 @@ const buildContext = (filePath, config) => {
 
 const buildCommandString = (config, filePath, options) => {
     const { command, debugCommand } = config;
-    const { isDebug, isInspect, inspectPort } = options;
+    const { isDebug, isInspect, inspectPort, cwd } = options;
     let cmd = debugCommand && isDebug ? debugCommand : command;
+
+    const npmModuleCmd = _.head(cmd.split(' '));
+    const commandBinCliPath = path.join(cwd, 'node_modules', '.bin', npmModuleCmd);
+
+    if (fs.existsSync(commandBinCliPath) && (inspectPort || isDebug || isInspect)) {
+        cmd = cmd.replace(`${npmModuleCmd} `, `node ${commandBinCliPath} `);
+    }
 
     if (inspectPort) {
         cmd = cmd.replace('node ', `node --inspect-brk=${Number(inspectPort) + 1} `); // Hail to Webstorm

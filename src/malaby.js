@@ -89,7 +89,8 @@ const defaultConfigPath = path.join(CWD, 'malaby-config.json');
         process.exit(1);
     }
 
-    const commandString = buildCommandString(context.config, testFileAbsolutePath, { isDebug, isInspect, inspectPort });
+    const options = { isDebug, isWatchMode, isInspect, inspectPort, cwd: configPathCwd };
+    const commandString = buildCommandString(context.config, testFileAbsolutePath, options);
     const commandInArray = _.compact([
         isNdb && 'ndb',
         'npx',
@@ -103,5 +104,6 @@ const defaultConfigPath = path.join(CWD, 'malaby-config.json');
     const filesToWatch = getFilesToWatch(context);
     const filesToIgnore = getFilesToIgnore(context);
 
-    malabyRunner(command, commandArgs, { cwd: configPathCwd, isWatchMode, isDebug, filesToWatch, filesToIgnore });
+    const malabyRunnerOptions = _.defaults({ filesToWatch, filesToIgnore }, options);
+    malabyRunner(command, commandArgs, malabyRunnerOptions);
 })();

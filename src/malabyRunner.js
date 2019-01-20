@@ -4,7 +4,8 @@ const watch = require('node-watch');
 const logger = require('./logger');
 const TestRunner = require('./TestRunner');
 
-const malabyRunner = (command, commandArgs, { cwd, isWatchMode, isDebug, filesToWatch, filesToIgnore }) => { // eslint-disable-line
+const malabyRunner = (command, commandArgs, options) => { // eslint-disable-line
+    const { cwd, isWatchMode, isDebug, filesToWatch, filesToIgnore } = options;
     const runTest = new TestRunner(command, commandArgs, cwd);
 
     let inProgress = false;
