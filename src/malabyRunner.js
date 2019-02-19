@@ -32,6 +32,8 @@ const malabyRunner = (command, commandArgs, options) => { // eslint-disable-line
         } else if (shouldRunNextTime) {
             shouldRunNextTime = false;
             runTest.run({ onStart: onRestart, onFinish });
+        } else {
+            process.exit(exitCode);
         }
     };
 
