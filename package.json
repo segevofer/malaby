@@ -2,7 +2,7 @@
   "name": "malaby",
   "version": "1.0.17",
   "description": "Easy and fast test runner to run any kind of test",
-  "main": "malaby.js",
+  "main": "src/malaby.js",
   "scripts": {
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
