@@ -31,6 +31,7 @@ const isWatchMode = argv.watch;
 const isDebug = argv.debug;
 const isNdb = argv.ndb;
 const isHelp = argv.help;
+const isInitCommand = argv._.length === 1 && _.head(argv._) === 'init';
 
 const isInspect = execArgv.inspect;
 const inspectPort = execArgv['inspect-brk'];
@@ -52,7 +53,7 @@ const defaultConfigPath = path.join(CWD, 'malaby-config.json');
         process.exit(1);
     }
 
-    if (argv.isInit) {
+    if (isInitCommand) {
         createConfigFile(defaultConfigPath);
         return;
     }
