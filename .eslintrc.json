@@ -1,12 +1,12 @@
 {
   "extends": ["airbnb"],
   "rules": {
-    "indent": ["error", 4],
-    "max-len": 0,
+    "comma-dangle": 0,
     "global-require": 0,
+    "import/no-dynamic-require": 0,
+    "max-len": 0,
     "no-template-curly-in-string": 0,
     "object-curly-newline": 0,
-    "comma-dangle": 0,
-    "import/no-dynamic-require": 0
+    "quotes": "double"
   }
 }

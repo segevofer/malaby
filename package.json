@@ -4,8 +4,8 @@
   "description": "Easy and fast test runner to run any kind of test",
   "main": "src/malaby.js",
   "scripts": {
-    "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "commit": "lintush && git commit -F .git/COMMIT_EDITMSG",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -21,12 +21,12 @@
   },
   "homepage": "https://github.com/segevofer/malaby#readme",
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "chalk": "^2.4.2",
     "find-up": "^3.0.0",
     "glob-to-regexp": "^0.4.1",
-    "lodash": "^4.17.15",
-    "minimist": "^1.2.0",
+    "lodash": "^4.17.21",
+    "minimist": "^1.2.5",
     "node-watch": "^0.5.9"
   },
   "bin": {
@@ -34,10 +34,12 @@
   },
   "devDependencies": {
     "eslint": "^5.16.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.18.0",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-config-airbnb": "^17.1.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-node": "^7.0.1",
-    "eslint-plugin-react": "^7.14.2"
+    "eslint-plugin-react": "^7.24.0",
+    "lintush": "^1.0.11",
+    "prettier": "^2.3.1"
   }
 }
